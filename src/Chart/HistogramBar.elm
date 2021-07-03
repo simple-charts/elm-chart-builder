@@ -1,5 +1,5 @@
 module Chart.HistogramBar exposing
-    ( dataAccessor, preProcessedDataAccessor
+    ( AccessorHistogram, dataAccessor, preProcessedDataAccessor
     , init
     , render
     , Config, RequiredConfig
@@ -12,10 +12,14 @@ module Chart.HistogramBar exposing
 
 The histogram bar chart can both generate the histogram data automatically or accept preprocessed data.
 
+⚠ This module is still incomplete and does not expose all the flexibility that elm-visialization offers. Histogram generation for now always expects a list of steps in the data accessor and a domain in the config. This will likely change in the future.
+
+⚠ When passing steps one should also explicity pass a domain that matches the steps. This will likely change in the future.
+
 
 # Data Accessors
 
-@docs dataAccessor, preProcessedDataAccessor
+@docs AccessorHistogram, dataAccessor, preProcessedDataAccessor
 
 
 # Chart Initialization
@@ -83,6 +87,12 @@ type alias Steps =
     List Float
 
 
+{-| The data accessor for the histogram
+-}
+type alias AccessorHistogram data =
+    Type.AccessorHistogram data
+
+
 {-| The data accessor for generating a histogram.
 It takes a config that is separate from the general config,
 because it is only used when generating a histogram and not for bucketed pre-processed data.
@@ -104,9 +114,12 @@ dataAccessor bins acc =
 Meaning the data has already been bucketed and counted.
 `values` here is not used and always passed as an empty array.
 
+The data must be compatible with the [Bin](https://package.elm-lang.org/packages/gampleman/elm-visualization/latest/Histogram#Bin) data type from elm-visualization.
+
     preProcessedDataAccessor =
         Histo.preProcessedDataAccessor
             (\d ->
+                -- This is a Bin data type from elm-visualization
                 { x0 = d.bucket
                 , x1 = d.bucket + 0.1
                 , values = []

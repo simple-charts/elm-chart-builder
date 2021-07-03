@@ -1,6 +1,6 @@
 module HistogramBarChart exposing (data, main)
 
-{-| This module shows how to build a simple bar chart.
+{-| Examples for the HistogramBar module
 -}
 
 import Axis
@@ -76,6 +76,11 @@ attrs =
     ]
 
 
+type alias PreProcessedData =
+    { bucket : Float, count : Int }
+
+
+preProcessedData : List PreProcessedData
 preProcessedData =
     [ { bucket = 0.8
       , count = 10000
@@ -114,11 +119,7 @@ preProcessedData =
         |> List.sortBy .bucket
 
 
-type alias Data =
-    Float
-
-
-data : List Data
+data : List Float
 data =
     [ 0.01
     , 0.02
@@ -140,15 +141,7 @@ data =
     , 0.65
     , 0.75
     , 0.81
-    , 0.9
-    , 0.91
-    , 0.99
     ]
-
-
-accessor : data -> data
-accessor =
-    identity
 
 
 steps : List Float
@@ -156,8 +149,9 @@ steps =
     [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 ]
 
 
+dataAccessor : Histo.AccessorHistogram Float
 dataAccessor =
-    Histo.dataAccessor steps accessor
+    Histo.dataAccessor steps identity
 
 
 histo : Html msg
@@ -174,6 +168,7 @@ histo =
         |> Histo.render ( data, dataAccessor )
 
 
+preProcessedDataAccessor : Histo.AccessorHistogram PreProcessedData
 preProcessedDataAccessor =
     Histo.preProcessedDataAccessor
         (\d ->
